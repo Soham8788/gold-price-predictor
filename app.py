@@ -1,37 +1,31 @@
+cat > app.py << 'EOF'
 """
-Gold Price Prediction Web App
-Live demo on Render/Railway/Replit
+Gold Price Prediction Web App (using scikit-learn)
 """
-
 from flask import Flask, render_template, request, jsonify
-from tensorflow.keras.models import load_model
 import numpy as np
 import yfinance as yf
 import joblib
 import os
-import sys
 
 app = Flask(__name__)
 
-# Load model and scaler
+# Load model and scalers
 print("="*50)
 print("🚀 Starting Gold Price Predictor")
 print("="*50)
 
 try:
-    if os.path.exists('models/gold_model.h5'):
-        model = load_model('models/gold_model.h5')
-        scaler = joblib.load('models/scaler.pkl')
-        print("✅ Model loaded successfully!")
-    else:
-        print("⚠️ Model not found. Training model now...")
-        os.system('python train.py')
-        model = load_model('models/gold_model.h5')
-        scaler = joblib.load('models/scaler.pkl')
-        print("✅ Model trained and loaded!")
+    model = joblib.load('models/gold_model.pkl')
+    scaler_X = joblib.load('models/scaler_X.pkl')
+    scaler_y = joblib.load('models/scaler_y.pkl')
+    print("✅ Model loaded successfully!")
 except Exception as e:
     print(f"❌ Error loading model: {e}")
-    sys.exit(1)
+    print("⚠️ Please run 'python train_simple.py' first")
+    model = None
+    scaler_X = None
+    scaler_y = None
 
 def get_latest_data():
     """Get latest gold prices"""
@@ -45,33 +39,39 @@ def get_latest_data():
     return np.array([1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890])
 
 def predict_future(days=30):
-    """Predict future gold prices"""
+    """Predict future gold prices using iterative predictions"""
+    if model is None or scaler_X is None or scaler_y is None:
+        # Fallback: simple linear projection
+        current = get_latest_data()[-1]
+        return [float(current + i*2) for i in range(days)]
+    
     try:
         # Get latest data
         latest_data = get_latest_data()
+        if len(latest_data) < 30:
+            latest_data = np.linspace(1800, 2000, 30)
         
-        if len(latest_data) < 60:
-            latest_data = np.linspace(1800, 2000, 60)
-        
-        # Prepare sequence
-        last_60 = latest_data[-60:].reshape(-1, 1)
-        last_60_scaled = scaler.transform(last_60)
-        current_seq = last_60_scaled.flatten()
-        
-        # Predict day by day
         predictions = []
+        current_window = latest_data[-30:].copy()
+        
         for _ in range(days):
-            input_seq = current_seq.reshape(1, 60, 1)
-            next_price_scaled = model.predict(input_seq, verbose=0)[0][0]
-            next_price = scaler.inverse_transform([[next_price_scaled]])[0][0]
-            predictions.append(float(next_price))
-            current_seq = np.roll(current_seq, -1)
-            current_seq[-1] = next_price_scaled
+            # Scale and predict
+            window_scaled = scaler_X.transform(current_window.reshape(1, -1))
+            pred_scaled = model.predict(window_scaled)[0]
+            pred_price = scaler_y.inverse_transform([[pred_scaled]])[0][0]
+            
+            predictions.append(float(pred_price))
+            
+            # Update window (shift and add prediction)
+            current_window = np.roll(current_window, -1)
+            current_window[-1] = pred_price
         
         return predictions
     except Exception as e:
         print(f"Prediction error: {e}")
-        return [1800 + i*5 for i in range(days)]
+        # Fallback
+        current = get_latest_data()[-1]
+        return [float(current + i*2) for i in range(days)]
 
 @app.route('/')
 def home():
@@ -103,8 +103,9 @@ def predict():
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'healthy', 'model_loaded': True})
+    return jsonify({'status': 'healthy', 'model_loaded': model is not None})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+EOF
