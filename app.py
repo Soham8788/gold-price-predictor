@@ -1,4 +1,3 @@
-cat > app.py << 'EOF'
 """
 Gold Price Prediction Web App (using scikit-learn)
 """
@@ -22,7 +21,6 @@ try:
     print("✅ Model loaded successfully!")
 except Exception as e:
     print(f"❌ Error loading model: {e}")
-    print("⚠️ Please run 'python train_simple.py' first")
     model = None
     scaler_X = None
     scaler_y = None
@@ -59,17 +57,14 @@ def predict_future(days=30):
             window_scaled = scaler_X.transform(current_window.reshape(1, -1))
             pred_scaled = model.predict(window_scaled)[0]
             pred_price = scaler_y.inverse_transform([[pred_scaled]])[0][0]
-            
             predictions.append(float(pred_price))
-            
-            # Update window (shift and add prediction)
+            # Update window
             current_window = np.roll(current_window, -1)
             current_window[-1] = pred_price
         
         return predictions
     except Exception as e:
         print(f"Prediction error: {e}")
-        # Fallback
         current = get_latest_data()[-1]
         return [float(current + i*2) for i in range(days)]
 
@@ -82,7 +77,6 @@ def predict():
     try:
         data = request.get_json()
         days = int(data.get('days', 30))
-        
         if days < 1 or days > 90:
             return jsonify({'error': 'Days must be between 1 and 90'}), 400
         
@@ -108,4 +102,3 @@ def health():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
-EOF
