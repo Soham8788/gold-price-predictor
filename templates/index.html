@@ -3,383 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gold Price Predictor - AI Powered</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        .control-panel {
-            text-align: center;
-        }
-        
-        .input-group {
-            display: inline-flex;
-            gap: 15px;
-            align-items: center;
-            background: #f5f5f5;
-            padding: 20px 30px;
-            border-radius: 50px;
-        }
-        
-        .input-group label {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .input-group input {
-            padding: 12px 20px;
-            font-size: 1.1em;
-            width: 100px;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-        
-        .predict-btn {
-            background: linear-gradient(135deg, #f5af19 0%, #f12711 100%);
-            color: white;
-            border: none;
-            padding: 12px 40px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .predict-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-        
-        .predict-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .stat-card h3 {
-            font-size: 0.9em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .stat-card p {
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-        
-        .chart-container {
-            margin-top: 20px;
-        }
-        
-        .info-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-        
-        .info-section h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .info-section p {
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        .disclaimer {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #856404;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            display: none;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #f5af19;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 768px) {
-            .header h1 { font-size: 1.8em; }
-            .input-group { flex-direction: column; border-radius: 20px; }
-            .stats-grid { grid-template-columns: 1fr; }
-        }
-        
-        .footer {
-            text-align: center;
-            color: white;
-            margin-top: 30px;
-            padding: 20px;
-            opacity: 0.8;
-        }
-        
-        .footer a {
-            color: white;
-            text-decoration: none;
-        }
-    </style>
+    <title>Gold Price Predictor | AI-Powered Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>🏆 Gold Price Predictor</h1>
-            <p>AI-Powered Deep Learning LSTM Model</p>
-            <div class="badge">🎯 Real-time Predictions | 📈 94% Accuracy</div>
+            <div class="gold-icon">🥇</div>
+            <h1>Gold Price Predictor</h1>
+            <p>AI-powered gold price forecasting using machine learning</p>
         </div>
-        
+
+        <!-- Main Card -->
         <div class="card">
-            <div class="control-panel">
+            <div class="current-price-section">
+                <div class="price-label">Current Gold Price</div>
+                <div class="price-value" id="currentPrice">$---</div>
+                <div class="price-update">Last updated: <span id="updateTime">Just now</span></div>
+            </div>
+
+            <div class="input-section">
+                <label for="days">📅 Prediction Period</label>
                 <div class="input-group">
-                    <label>📅 Predict for next:</label>
-                    <input type="number" id="days" value="30" min="1" max="90">
-                    <label>days</label>
-                    <button class="predict-btn" onclick="makePrediction()">
-                        🔮 Predict Now
-                    </button>
+                    <input type="range" id="daysSlider" min="1" max="90" value="30">
+                    <div class="days-control">
+                        <button class="days-btn" onclick="setDays(7)">7 Days</button>
+                        <button class="days-btn" onclick="setDays(30)">30 Days</button>
+                        <button class="days-btn" onclick="setDays(60)">60 Days</button>
+                        <button class="days-btn" onclick="setDays(90)">90 Days</button>
+                    </div>
+                    <div class="days-value">
+                        Predicting for: <strong id="daysValue">30</strong> days
+                    </div>
                 </div>
             </div>
-            
-            <div id="statsGrid" class="stats-grid" style="display: none;"></div>
-            
-            <div id="loading" class="loading">
-                <div class="spinner"></div>
-                <p style="margin-top: 20px;">Analyzing market data...</p>
+
+            <button class="predict-btn" id="predictBtn" onclick="makePrediction()">
+                <span class="btn-text">🔮 Predict Gold Prices</span>
+                <span class="btn-loader" style="display: none;">Loading...</span>
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="results" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Expected Average</div>
+                    <div class="stat-value" id="avgPrice">$---</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Highest Predicted</div>
+                    <div class="stat-value" id="maxPrice">$---</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Lowest Predicted</div>
+                    <div class="stat-value" id="minPrice">$---</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Return</div>
+                    <div class="stat-value" id="totalReturn">$---</div>
+                </div>
             </div>
-            
+
             <div class="chart-container">
-                <div id="chart"></div>
+                <div id="priceChart"></div>
+            </div>
+
+            <div class="insights">
+                <h3>📊 Market Insights</h3>
+                <div id="insightsText"></div>
             </div>
         </div>
-        
-        <div class="info-section">
-            <h3>🤖 How It Works</h3>
-            <p>This AI model uses a 2-layer LSTM (Long Short-Term Memory) neural network trained on 10+ years of historical gold price data. It analyzes 60-day price patterns to predict future trends with high accuracy.</p>
-            <br>
-            <h3>📊 Model Performance</h3>
-            <p>• Architecture: LSTM (100 units) + Dropout + Dense layers<br>
-            • Training Data: 2015-2024 gold futures (GC=F)<br>
-            • Input Sequence: 60 days of historical prices<br>
-            • Prediction Horizon: 1-90 days forward</p>
-        </div>
-        
-        <div class="disclaimer">
-            ⚠️ <strong>Disclaimer:</strong> This tool is for educational and research purposes only. Not financial advice. Cryptocurrency and commodity markets are highly volatile.
-        </div>
-        
+
+        <!-- Footer -->
         <div class="footer">
-            <p>🚀 Powered by TensorFlow | 📡 Live Data from Yahoo Finance | 💡 Open Source</p>
-            <p style="margin-top: 10px;">
-                <a href="#" target="_blank">GitHub</a> | 
-                <a href="#" target="_blank">Documentation</a> | 
-                <a href="#" target="_blank">API</a>
-            </p>
+            <p>⚠️ Disclaimer: These predictions are based on historical data and machine learning models. Not financial advice.</p>
+            <p>Powered by scikit-learn | Data: Simulated training data</p>
         </div>
     </div>
-    
+
     <script>
+        let currentChart = null;
+        let currentPrice = 0;
+
+        // Update days display
+        const slider = document.getElementById('daysSlider');
+        const daysValue = document.getElementById('daysValue');
+        
+        slider.addEventListener('input', function() {
+            daysValue.textContent = this.value;
+        });
+
+        // Preset days buttons
+        function setDays(days) {
+            slider.value = days;
+            daysValue.textContent = days;
+        }
+
+        // Update current time
+        document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
+
+        // Make prediction
         async function makePrediction() {
-            const days = document.getElementById('days').value;
-            const btn = document.querySelector('.predict-btn');
-            const originalText = btn.textContent;
-            const statsDiv = document.getElementById('statsGrid');
-            const loadingDiv = document.getElementById('loading');
+            const predictBtn = document.getElementById('predictBtn');
+            const btnText = predictBtn.querySelector('.btn-text');
+            const btnLoader = predictBtn.querySelector('.btn-loader');
             
-            // Validate
-            if (days < 1 || days > 90) {
-                alert('Please enter days between 1 and 90');
-                return;
-            }
+            // Show loading state
+            predictBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
             
-            // Show loading
-            btn.textContent = '⏳ Processing...';
-            btn.disabled = true;
-            statsDiv.style.display = 'none';
-            loadingDiv.style.display = 'block';
+            const days = parseInt(slider.value);
             
             try {
                 const response = await fetch('/predict', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ days: parseInt(days) })
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ days: days })
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Update stats
-                    statsDiv.style.display = 'grid';
-                    statsDiv.innerHTML = `
-                        <div class="stat-card">
-                            <h3>💰 Current Price</h3>
-                            <p>$${data.current_price.toFixed(2)}</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>📈 Average Forecast</h3>
-                            <p>$${data.avg_price.toFixed(2)}</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>📊 Highest</h3>
-                            <p>$${data.max_price.toFixed(2)}</p>
-                        </div>
-                        <div class="stat-card">
-                            <h3>📉 Lowest</h3>
-                            <p>$${data.min_price.toFixed(2)}</p>
-                        </div>
-                    `;
-                    
-                    // Create chart
-                    const dates = Array.from({length: data.days}, (_, i) => `Day ${i+1}`);
-                    
-                    const trace = {
-                        x: dates,
-                        y: data.predictions,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: 'Predicted Price',
-                        line: { color: '#f5af19', width: 3 },
-                        marker: { size: 8, color: '#f12711', symbol: 'circle' },
-                        fill: 'tozeroy',
-                        fillcolor: 'rgba(245, 175, 25, 0.1)'
-                    };
-                    
-                    const layout = {
-                        title: {
-                            text: `Gold Price Forecast - Next ${data.days} Days`,
-                            font: { size: 18, weight: 'bold' }
-                        },
-                        xaxis: {
-                            title: 'Days Ahead',
-                            gridcolor: '#e0e0e0',
-                            showgrid: true
-                        },
-                        yaxis: {
-                            title: 'Price (USD)',
-                            gridcolor: '#e0e0e0',
-                            tickprefix: '$',
-                            showgrid: true
-                        },
-                        plot_bgcolor: '#ffffff',
-                        paper_bgcolor: '#ffffff',
-                        height: 500,
-                        hovermode: 'closest'
-                    };
-                    
-                    Plotly.newPlot('chart', [trace], layout, {responsive: true});
-                    
-                    // Scroll to chart
-                    document.querySelector('.chart-container').scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
+                    currentPrice = data.current_price;
+                    displayResults(data);
                 } else {
                     alert('Error: ' + data.error);
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to get prediction. Please try again.');
+                alert('Error making prediction: ' + error.message);
             } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-                loadingDiv.style.display = 'none';
+                // Hide loading state
+                predictBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
             }
         }
         
-        // Auto prediction on page load
+        function displayResults(data) {
+            // Update current price
+            document.getElementById('currentPrice').textContent = '$' + data.current_price.toFixed(2);
+            
+            // Update stats
+            document.getElementById('avgPrice').textContent = '$' + data.avg_price.toFixed(2);
+            document.getElementById('maxPrice').textContent = '$' + data.max_price.toFixed(2);
+            document.getElementById('minPrice').textContent = '$' + data.min_price.toFixed(2);
+            
+            const totalReturn = (data.predictions[data.predictions.length - 1] - data.current_price).toFixed(2);
+            const returnPercent = ((totalReturn / data.current_price) * 100).toFixed(2);
+            document.getElementById('totalReturn').innerHTML = `$${totalReturn} <span style="font-size: 14px;">(${returnPercent}%)</span>`;
+            
+            // Show results section
+            document.getElementById('results').style.display = 'block';
+            
+            // Create chart
+            const days = Array.from({length: data.predictions.length}, (_, i) => `Day ${i + 1}`);
+            
+            const trace = {
+                x: days,
+                y: data.predictions,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Predicted Price',
+                line: {
+                    color: '#fbbf24',
+                    width: 3,
+                    shape: 'linear'
+                },
+                marker: {
+                    color: '#f59e0b',
+                    size: 6
+                },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(251, 191, 36, 0.1)'
+            };
+            
+            const layout = {
+                title: {
+                    text: 'Gold Price Forecast',
+                    font: { size: 20, family: 'Inter, sans-serif', color: '#ffffff' }
+                },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                xaxis: {
+                    title: 'Days from Today',
+                    tickangle: -45,
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    color: '#9ca3af'
+                },
+                yaxis: {
+                    title: 'Price (USD)',
+                    gridcolor: 'rgba(255,255,255,0.1)',
+                    color: '#9ca3af',
+                    tickprefix: '$'
+                },
+                hovermode: 'closest',
+                margin: { t: 50, l: 60, r: 40, b: 60 }
+            };
+            
+            const config = {
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: ['lasso2d', 'select2d']
+            };
+            
+            if (currentChart) {
+                Plotly.newPlot('priceChart', [trace], layout, config);
+            } else {
+                Plotly.newPlot('priceChart', [trace], layout, config);
+                currentChart = true;
+            }
+            
+            // Generate insights
+            const firstPred = data.predictions[0];
+            const lastPred = data.predictions[data.predictions.length - 1];
+            const trend = lastPred > firstPred ? 'upward 📈' : 'downward 📉';
+            const maxIdx = data.predictions.indexOf(data.max_price);
+            const minIdx = data.predictions.indexOf(data.min_price);
+            
+            const insightsHTML = `
+                <p>🔮 The model predicts a <strong>${trend}</strong> trend over the next ${data.days} days.</p>
+                <p>💰 Starting from $${data.current_price.toFixed(2)}, the price is forecasted to reach $${lastPred.toFixed(2)}.</p>
+                <p>📈 The highest predicted price is $${data.max_price.toFixed(2)} (Day ${maxIdx + 1}).</p>
+                <p>📉 The lowest predicted price is $${data.min_price.toFixed(2)} (Day ${minIdx + 1}).</p>
+                <p>📊 Average expected price: $${data.avg_price.toFixed(2)}.</p>
+            `;
+            
+            document.getElementById('insightsText').innerHTML = insightsHTML;
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Load initial prediction
         window.addEventListener('load', () => {
             setTimeout(() => {
                 makePrediction();
