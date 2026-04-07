@@ -2,7 +2,7 @@ services:
   - type: web
     name: gold-price-predictor
     runtime: python
-    repo: https://github.com/YOUR_USERNAME/gold-price-predictor
+    repo: https://github.com/Soham8788/gold-price-predictor
     plan: free
     envVars:
       - key: PYTHON_VERSION
