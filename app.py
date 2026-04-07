@@ -33,18 +33,15 @@ def get_latest_data():
             return df['Close'].values
     except:
         pass
-    # Fallback data
     return np.array([1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890])
 
 def predict_future(days=30):
-    """Predict future gold prices using iterative predictions"""
-    if model is None or scaler_X is None or scaler_y is None:
-        # Fallback: simple linear projection
+    """Predict future gold prices"""
+    if model is None:
         current = get_latest_data()[-1]
         return [float(current + i*2) for i in range(days)]
     
     try:
-        # Get latest data
         latest_data = get_latest_data()
         if len(latest_data) < 30:
             latest_data = np.linspace(1800, 2000, 30)
@@ -53,18 +50,15 @@ def predict_future(days=30):
         current_window = latest_data[-30:].copy()
         
         for _ in range(days):
-            # Scale and predict
             window_scaled = scaler_X.transform(current_window.reshape(1, -1))
             pred_scaled = model.predict(window_scaled)[0]
             pred_price = scaler_y.inverse_transform([[pred_scaled]])[0][0]
             predictions.append(float(pred_price))
-            # Update window
             current_window = np.roll(current_window, -1)
             current_window[-1] = pred_price
         
         return predictions
     except Exception as e:
-        print(f"Prediction error: {e}")
         current = get_latest_data()[-1]
         return [float(current + i*2) for i in range(days)]
 
